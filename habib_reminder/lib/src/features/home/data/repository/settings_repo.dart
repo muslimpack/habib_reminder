@@ -50,9 +50,9 @@ class SettingsRepo {
   }
 
   // Load audio list
-  List<AudioModel>? loadAudioList() {
+  List<AudioModel> loadAudioList() {
     final audioListData = box.read(_audioListKey) as List<dynamic>?;
-    if (audioListData == null) return null;
+    if (audioListData == null) return [];
 
     return audioListData
         .map((data) => AudioModel.fromMap(data as Map<String, dynamic>))

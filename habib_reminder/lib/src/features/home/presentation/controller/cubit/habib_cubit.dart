@@ -40,7 +40,15 @@ class HabibCubit extends Cubit<HabibState> {
       );
 
     // Use saved audio list or default to dummy list
-    final audioList = settingsRepo.loadAudioList() ?? audioDummyList;
+    final loadedAudioList = settingsRepo.loadAudioList();
+    final audioList = audioDummyList;
+
+    for (var i = 0; i < audioList.length; i++) {
+      final audio = audioList[i];
+      audioList[i] =
+          loadedAudioList.where((e) => e.id == audio.id).firstOrNull ?? audio;
+    }
+
     final double globalVolume = settingsRepo.loadGlobalVolume();
     final int audioIntervalInMinutes = settingsRepo
         .loadAudioIntervalInMinutes();

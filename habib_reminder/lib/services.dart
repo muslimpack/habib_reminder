@@ -1,1 +1,1 @@
-Future<void> init_services() async {}
+Future<void> initServices() async {}

@@ -15,9 +15,12 @@ dependencies:
   equatable: ^2.0.7
   flutter:
     sdk: flutter
+  flutter_bloc: ^9.1.1
   flutter_localizations:
     sdk: flutter
-  flutter_bloc: ^9.1.1
+  get_it: ^8.1.0
+  get_storage: ^2.1.1
+  window_manager: ^0.5.1
 
 dev_dependencies:
   flutter_lints: ^5.0.0

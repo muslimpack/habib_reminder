@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:habib_reminder/app.dart';
+import 'package:habib_reminder/services.dart';
 
-void main() {
+Future main() async {
+  await initServices();
   runApp(const MyApp());
 }

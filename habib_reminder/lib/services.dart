@@ -1,1 +1,38 @@
-Future<void> initServices() async {}
+import 'package:flutter/material.dart';
+import 'package:get_storage/get_storage.dart';
+import 'package:habib_reminder/src/core/constants/const.dart';
+import 'package:habib_reminder/src/core/di/dependency_injection.dart'
+    as service_locator;
+import 'package:habib_reminder/src/core/extension/extension_platform.dart';
+import 'package:habib_reminder/src/features/desktop_ui/data/repository/desktop_repo.dart';
+import 'package:window_manager/window_manager.dart';
+
+import 'src/core/di/dependency_injection.dart';
+
+Future<void> initServices() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await GetStorage.init(kGetStorageName);
+  initWindowsManager();
+
+  service_locator.initSL();
+}
+
+Future initWindowsManager() async {
+  if (!PlatformExtension.isDesktop) return;
+
+  await windowManager.ensureInitialized();
+
+  final WindowOptions windowOptions = WindowOptions(
+    size: sl<DesktopRepo>().desktopWindowSize,
+    center: true,
+    fullScreen: false,
+    title: "Habib Reminder",
+    titleBarStyle: TitleBarStyle.hidden,
+    maximumSize: sl<DesktopRepo>().desktopWindowSize,
+    minimumSize: sl<DesktopRepo>().desktopWindowSize,
+    windowButtonVisibility: false,
+  );
+  await windowManager.waitUntilReadyToShow(windowOptions, () async {
+    await windowManager.setResizable(false);
+  });
+}

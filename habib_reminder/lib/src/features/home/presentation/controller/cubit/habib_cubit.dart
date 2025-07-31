@@ -23,7 +23,7 @@ class HabibCubit extends Cubit<HabibState> {
 
     /// get random audio
 
-    final double volume = 1;
+    final double volume = .5;
     final int audioIntervalInMinutes = 1;
 
     emit(

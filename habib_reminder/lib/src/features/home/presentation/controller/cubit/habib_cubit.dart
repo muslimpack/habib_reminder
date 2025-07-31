@@ -87,6 +87,7 @@ class HabibCubit extends Cubit<HabibState> {
   Future<void> startReminder() async {
     final state = this.state;
     if (state is! HabibLoadedState) return;
+    if (state.isRunning) return;
     await settingsRepo.saveIsRunning(true);
     emit(state.copyWith(isRunning: true));
     await _play();

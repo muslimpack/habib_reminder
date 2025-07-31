@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:habib_reminder/src/core/constants/const.dart';
 import 'package:habib_reminder/src/features/home/presentation/screens/settings_view.dart';
 import 'package:habib_reminder/src/features/home/presentation/screens/summary_view.dart';
 
@@ -21,7 +22,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("تذكرة المحب"),
+        title: const Text(kAppNameAr),
         centerTitle: true,
         bottom: TabBar(
           controller: _tabController,

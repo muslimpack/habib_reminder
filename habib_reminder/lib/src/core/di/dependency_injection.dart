@@ -1,6 +1,7 @@
 import 'package:get_it/get_it.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:habib_reminder/src/core/constants/const.dart';
+import 'package:habib_reminder/src/core/services/system_tray_service.dart';
 import 'package:habib_reminder/src/features/desktop_ui/data/repository/desktop_repo.dart';
 import 'package:habib_reminder/src/features/home/data/repository/settings_repo.dart';
 import 'package:habib_reminder/src/features/home/presentation/controller/cubit/habib_cubit.dart';
@@ -16,6 +17,7 @@ Future<void> initSL() async {
   ///MARK: Init Repo
 
   ///MARK: Init Manager;
+  sl.registerLazySingleton(() => SystemTrayService());
 
   ///MARK: Init BLOC
 

@@ -12,6 +12,7 @@ class HabibCubit extends Cubit<HabibState> {
   final AudioPlayer audioPlayer = AudioPlayer();
   final AudioPlayer previewAudioPlayer = AudioPlayer();
   Timer? timer;
+  Timer? countdownTimer;
   HabibCubit() : super(HabibLoadingState());
 
   Future<void> start() async {
@@ -30,6 +31,7 @@ class HabibCubit extends Cubit<HabibState> {
         globalVolume: volume,
         audioIntervalInMinutes: audioIntervalInMinutes,
         isRunning: true,
+        timeRemainingInSeconds: audioIntervalInMinutes * 60,
       ),
     );
 
@@ -76,17 +78,49 @@ class HabibCubit extends Cubit<HabibState> {
     if (state is! HabibLoadedState) return;
     await audioPlayer.stop();
     stopTimer();
-    emit(state.copyWith(isRunning: false));
+    emit(state.copyWith(
+      isRunning: false,
+      timeRemainingInSeconds: 0,
+    ));
   }
 
   void startTimer() {
     final state = this.state;
     if (state is! HabibLoadedState) return;
+    
+    // Reset countdown to full interval
+    final totalSeconds = state.audioIntervalInMinutes * 60;
+    emit(state.copyWith(
+      isRunning: true,
+      timeRemainingInSeconds: totalSeconds,
+    ));
+    
+    // Start the main timer
     timer = Timer.periodic(
       Duration(minutes: state.audioIntervalInMinutes),
       (timer) => play(),
     );
-    emit(state.copyWith(isRunning: true));
+    
+    // Start countdown timer
+    startCountdownTimer();
+  }
+
+  void startCountdownTimer() {
+    countdownTimer = Timer.periodic(
+      const Duration(seconds: 1),
+      (timer) {
+        final state = this.state;
+        if (state is! HabibLoadedState) return;
+        
+        if (state.timeRemainingInSeconds > 0) {
+          emit(state.copyWith(
+            timeRemainingInSeconds: state.timeRemainingInSeconds - 1,
+          ));
+        } else {
+          timer.cancel();
+        }
+      },
+    );
   }
 
   void stopTimer() {
@@ -94,13 +128,18 @@ class HabibCubit extends Cubit<HabibState> {
     if (state is! HabibLoadedState) return;
     timer?.cancel();
     timer = null;
+    countdownTimer?.cancel();
+    countdownTimer = null;
   }
 
   Future<void> changeInterval(int audioIntervalInMinutes) async {
     final state = this.state;
     if (state is! HabibLoadedState) return;
     stopTimer();
-    emit(state.copyWith(audioIntervalInMinutes: audioIntervalInMinutes));
+    emit(state.copyWith(
+      audioIntervalInMinutes: audioIntervalInMinutes,
+      timeRemainingInSeconds: audioIntervalInMinutes * 60,
+    ));
     startTimer();
   }
 
@@ -114,5 +153,11 @@ class HabibCubit extends Cubit<HabibState> {
             .toList(),
       ),
     );
+  }
+
+  String formatTimeRemaining(int seconds) {
+    final minutes = seconds ~/ 60;
+    final remainingSeconds = seconds % 60;
+    return '${minutes.toString().padLeft(2, '0')}:${remainingSeconds.toString().padLeft(2, '0')}';
   }
 }

@@ -15,11 +15,13 @@ class HabibLoadedState extends HabibState {
   final double globalVolume;
   final int audioIntervalInMinutes;
   final bool isRunning;
+  final int timeRemainingInSeconds;
   const HabibLoadedState({
     required this.audioList,
     required this.globalVolume,
     required this.audioIntervalInMinutes,
     required this.isRunning,
+    this.timeRemainingInSeconds = 0,
   });
 
   @override
@@ -28,6 +30,7 @@ class HabibLoadedState extends HabibState {
     audioList,
     globalVolume,
     audioIntervalInMinutes,
+    timeRemainingInSeconds,
   ];
 
   HabibLoadedState copyWith({
@@ -35,6 +38,7 @@ class HabibLoadedState extends HabibState {
     double? globalVolume,
     int? audioIntervalInMinutes,
     bool? isRunning,
+    int? timeRemainingInSeconds,
   }) {
     return HabibLoadedState(
       audioList: audioList ?? this.audioList,
@@ -42,6 +46,7 @@ class HabibLoadedState extends HabibState {
       audioIntervalInMinutes:
           audioIntervalInMinutes ?? this.audioIntervalInMinutes,
       isRunning: isRunning ?? this.isRunning,
+      timeRemainingInSeconds: timeRemainingInSeconds ?? this.timeRemainingInSeconds,
     );
   }
 }

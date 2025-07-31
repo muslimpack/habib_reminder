@@ -28,7 +28,9 @@ class SummaryView extends StatelessWidget {
                           spacing: 10,
                           children: [
                             Icon(Icons.volume_up, size: 50),
-                            Text('الصوت: ${state.globalVolume}'),
+                            Text(
+                              'الصوت: ${(state.globalVolume * 100).toStringAsFixed(0)}',
+                            ),
                           ],
                         ),
                       ),
@@ -53,6 +55,39 @@ class SummaryView extends StatelessWidget {
                   ),
                 ],
               ),
+
+              // Countdown Timer Card
+              if (state.isRunning)
+                Card(
+                  color: Colors.green.withAlpha(100),
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      spacing: 10,
+                      children: [
+                        Icon(Icons.access_time, size: 50, color: Colors.green),
+                        Text(
+                          'الوقت المتبقي للعب التالي:',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        Text(
+                          context.read<HabibCubit>().formatTimeRemaining(
+                            state.timeRemainingInSeconds,
+                          ),
+                          style: TextStyle(
+                            fontSize: 32,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.green[700],
+                            fontFamily: 'monospace',
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
 
               Expanded(
                 child: Center(

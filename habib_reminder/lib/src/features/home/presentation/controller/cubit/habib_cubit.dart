@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter/material.dart';
 import 'package:habib_reminder/src/features/home/data/data_source/audio_dummy_list.dart';
 import 'package:habib_reminder/src/features/home/data/models/audio_model.dart';
 
@@ -78,49 +79,42 @@ class HabibCubit extends Cubit<HabibState> {
     if (state is! HabibLoadedState) return;
     await audioPlayer.stop();
     stopTimer();
-    emit(state.copyWith(
-      isRunning: false,
-      timeRemainingInSeconds: 0,
-    ));
+    emit(state.copyWith(isRunning: false, timeRemainingInSeconds: 0));
   }
 
   void startTimer() {
     final state = this.state;
     if (state is! HabibLoadedState) return;
-    
+
     // Reset countdown to full interval
     final totalSeconds = state.audioIntervalInMinutes * 60;
-    emit(state.copyWith(
-      isRunning: true,
-      timeRemainingInSeconds: totalSeconds,
-    ));
-    
+    emit(state.copyWith(isRunning: true, timeRemainingInSeconds: totalSeconds));
+
     // Start the main timer
     timer = Timer.periodic(
       Duration(minutes: state.audioIntervalInMinutes),
       (timer) => play(),
     );
-    
+
     // Start countdown timer
     startCountdownTimer();
   }
 
   void startCountdownTimer() {
-    countdownTimer = Timer.periodic(
-      const Duration(seconds: 1),
-      (timer) {
-        final state = this.state;
-        if (state is! HabibLoadedState) return;
-        
-        if (state.timeRemainingInSeconds > 0) {
-          emit(state.copyWith(
+    countdownTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      final state = this.state;
+      if (state is! HabibLoadedState) return;
+
+      if (state.timeRemainingInSeconds > 0) {
+        emit(
+          state.copyWith(
             timeRemainingInSeconds: state.timeRemainingInSeconds - 1,
-          ));
-        } else {
-          timer.cancel();
-        }
-      },
-    );
+          ),
+        );
+      } else {
+        timer.cancel();
+      }
+    });
   }
 
   void stopTimer() {
@@ -136,10 +130,12 @@ class HabibCubit extends Cubit<HabibState> {
     final state = this.state;
     if (state is! HabibLoadedState) return;
     stopTimer();
-    emit(state.copyWith(
-      audioIntervalInMinutes: audioIntervalInMinutes,
-      timeRemainingInSeconds: audioIntervalInMinutes * 60,
-    ));
+    emit(
+      state.copyWith(
+        audioIntervalInMinutes: audioIntervalInMinutes,
+        timeRemainingInSeconds: audioIntervalInMinutes * 60,
+      ),
+    );
     startTimer();
   }
 

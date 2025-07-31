@@ -24,6 +24,16 @@ class HabibLoadedState extends HabibState {
     this.timeRemainingInSeconds = 0,
   });
 
+  Color get timeRemainingInSecondsColor {
+    if (timeRemainingInSeconds > 10) {
+      return Colors.green;
+    } else if (timeRemainingInSeconds > 5) {
+      return Colors.orange;
+    } else {
+      return Colors.red;
+    }
+  }
+
   @override
   List<Object> get props => [
     isRunning,
@@ -46,7 +56,8 @@ class HabibLoadedState extends HabibState {
       audioIntervalInMinutes:
           audioIntervalInMinutes ?? this.audioIntervalInMinutes,
       isRunning: isRunning ?? this.isRunning,
-      timeRemainingInSeconds: timeRemainingInSeconds ?? this.timeRemainingInSeconds,
+      timeRemainingInSeconds:
+          timeRemainingInSeconds ?? this.timeRemainingInSeconds,
     );
   }
 }

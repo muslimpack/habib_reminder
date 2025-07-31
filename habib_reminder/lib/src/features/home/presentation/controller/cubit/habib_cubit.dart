@@ -6,47 +6,51 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:habib_reminder/src/features/home/data/data_source/audio_dummy_list.dart';
 import 'package:habib_reminder/src/features/home/data/models/audio_model.dart';
+import 'package:habib_reminder/src/features/home/data/repository/settings_repo.dart';
 
 part 'habib_state.dart';
 
 class HabibCubit extends Cubit<HabibState> {
-  final AudioPlayer audioPlayer = AudioPlayer();
-  final AudioPlayer previewAudioPlayer = AudioPlayer();
-  Timer? timer;
-  Timer? countdownTimer;
-  HabibCubit() : super(HabibLoadingState());
+  final SettingsRepo settingsRepo;
+  final AudioPlayer _audioPlayer = AudioPlayer();
+  final AudioPlayer _previewAudioPlayer = AudioPlayer();
+  Timer? _timer;
+  Timer? _countdownTimer;
+
+  HabibCubit(this.settingsRepo) : super(HabibLoadingState());
 
   Future<void> start() async {
     emit(HabibLoadingState());
 
-    final audioList = audioDummyList;
-
-    /// get random audio
-
-    final double volume = .5;
-    final int audioIntervalInMinutes = 1;
+    // Use saved audio list or default to dummy list
+    final audioList = settingsRepo.loadAudioList() ?? audioDummyList;
+    final double globalVolume = settingsRepo.loadGlobalVolume();
+    final int audioIntervalInMinutes = settingsRepo
+        .loadAudioIntervalInMinutes();
+    final bool isRunning = settingsRepo.loadIsRunning();
 
     emit(
       HabibLoadedState(
         audioList: audioList,
-        globalVolume: volume,
+        globalVolume: globalVolume,
         audioIntervalInMinutes: audioIntervalInMinutes,
-        isRunning: true,
+        isRunning: isRunning,
         timeRemainingInSeconds: audioIntervalInMinutes * 60,
       ),
     );
 
-    play();
+    _play();
   }
 
-  Future<void> changeVolume(double volume) async {
+  Future<void> changeGlobalVolume(double volume) async {
     final state = this.state;
     if (state is! HabibLoadedState) return;
-    await audioPlayer.setVolume(volume);
+    await _audioPlayer.setVolume(volume);
+    await settingsRepo.saveGlobalVolume(volume);
     emit(state.copyWith(globalVolume: volume));
   }
 
-  Future<void> play() async {
+  Future<void> _play() async {
     final state = this.state;
     if (state is! HabibLoadedState) return;
 
@@ -56,52 +60,61 @@ class HabibCubit extends Cubit<HabibState> {
     stopTimer();
     final currentAudio = randomAudio.firstOrNull;
     if (currentAudio != null) {
-      await audioPlayer.play(
+      await _audioPlayer.play(
         AssetSource('sounds/${currentAudio.path}'),
         volume: state.globalVolume * currentAudio.volume,
       );
     }
-    startTimer();
+    _startTimer();
   }
 
   Future<void> playPreview({required AudioModel audio}) async {
     final state = this.state;
     if (state is! HabibLoadedState) return;
 
-    await previewAudioPlayer.play(
+    await _previewAudioPlayer.play(
       AssetSource('sounds/${audio.path}'),
       volume: state.globalVolume * audio.volume,
     );
   }
 
-  Future<void> stop() async {
+  Future<void> startReminder() async {
     final state = this.state;
     if (state is! HabibLoadedState) return;
-    await audioPlayer.stop();
+    await settingsRepo.saveIsRunning(true);
+    emit(state.copyWith(isRunning: true));
+    await _play();
+  }
+
+  Future<void> stopReminder() async {
+    final state = this.state;
+    if (state is! HabibLoadedState) return;
+    await _audioPlayer.stop();
     stopTimer();
+    await settingsRepo.saveIsRunning(false);
     emit(state.copyWith(isRunning: false, timeRemainingInSeconds: 0));
   }
 
-  void startTimer() {
+  void _startTimer() {
     final state = this.state;
     if (state is! HabibLoadedState) return;
 
     // Reset countdown to full interval
     final totalSeconds = state.audioIntervalInMinutes * 60;
-    emit(state.copyWith(isRunning: true, timeRemainingInSeconds: totalSeconds));
+    emit(state.copyWith(timeRemainingInSeconds: totalSeconds));
 
     // Start the main timer
-    timer = Timer.periodic(
+    _timer = Timer.periodic(
       Duration(minutes: state.audioIntervalInMinutes),
-      (timer) => play(),
+      (timer) => _play(),
     );
 
     // Start countdown timer
-    startCountdownTimer();
+    _startCountdownTimer();
   }
 
-  void startCountdownTimer() {
-    countdownTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+  void _startCountdownTimer() {
+    _countdownTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
       final state = this.state;
       if (state is! HabibLoadedState) return;
 
@@ -120,35 +133,34 @@ class HabibCubit extends Cubit<HabibState> {
   void stopTimer() {
     final state = this.state;
     if (state is! HabibLoadedState) return;
-    timer?.cancel();
-    timer = null;
-    countdownTimer?.cancel();
-    countdownTimer = null;
+    _timer?.cancel();
+    _timer = null;
+    _countdownTimer?.cancel();
+    _countdownTimer = null;
   }
 
   Future<void> changeInterval(int audioIntervalInMinutes) async {
     final state = this.state;
     if (state is! HabibLoadedState) return;
     stopTimer();
+    await settingsRepo.saveAudioIntervalInMinutes(audioIntervalInMinutes);
     emit(
       state.copyWith(
         audioIntervalInMinutes: audioIntervalInMinutes,
         timeRemainingInSeconds: audioIntervalInMinutes * 60,
       ),
     );
-    startTimer();
+    _startTimer();
   }
 
   Future<void> toggleAudio(AudioModel audio) async {
     final state = this.state;
     if (state is! HabibLoadedState) return;
-    emit(
-      state.copyWith(
-        audioList: state.audioList
-            .map((e) => e.id == audio.id ? e.copyWith(play: !e.play) : e)
-            .toList(),
-      ),
-    );
+    final newList = List.of(
+      state.audioList,
+    ).map((e) => e.id == audio.id ? e.copyWith(play: !e.play) : e).toList();
+    await settingsRepo.saveAudioList(newList);
+    emit(state.copyWith(audioList: newList));
   }
 
   String formatTimeRemaining(int seconds) {

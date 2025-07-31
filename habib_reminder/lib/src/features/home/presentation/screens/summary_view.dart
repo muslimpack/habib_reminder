@@ -83,9 +83,9 @@ class SummaryView extends StatelessWidget {
                       IconButton(
                         onPressed: () {
                           if (state.isRunning) {
-                            context.read<HabibCubit>().stop();
+                            context.read<HabibCubit>().stopReminder();
                           } else {
-                            context.read<HabibCubit>().play();
+                            context.read<HabibCubit>().startReminder();
                           }
                         },
                         icon: Icon(

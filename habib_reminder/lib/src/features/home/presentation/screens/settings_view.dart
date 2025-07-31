@@ -41,7 +41,7 @@ class _SettingsViewState extends State<SettingsView> {
                           divisions: 100,
                           label: (state.globalVolume * 100).toStringAsFixed(0),
                           onChanged: (value) {
-                            context.read<HabibCubit>().changeVolume(
+                            context.read<HabibCubit>().changeGlobalVolume(
                               (value / 100),
                             );
                           },

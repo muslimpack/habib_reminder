@@ -3,9 +3,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:habib_reminder/src/core/di/dependency_injection.dart';
 import 'package:habib_reminder/src/core/extension/extension_platform.dart';
+import 'package:habib_reminder/src/core/utils/scroll_behavior.dart';
+import 'package:habib_reminder/src/features/desktop_ui/presentation/components/desktop_window_wrapper.dart';
 import 'package:habib_reminder/src/features/home/presentation/controller/cubit/habib_cubit.dart';
 import 'package:habib_reminder/src/features/home/presentation/screens/home_screen.dart';
-import 'package:habib_reminder/src/features/desktop_ui/presentation/components/desktop_window_wrapper.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -17,6 +18,7 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         title: 'Habib Reminder',
         debugShowCheckedModeBanner: false,
+        scrollBehavior: AppScrollBehavior(),
         theme: ThemeData(
           colorScheme: ColorScheme.fromSeed(
             seedColor: Colors.green,

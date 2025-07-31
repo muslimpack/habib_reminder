@@ -45,6 +45,10 @@ class _SettingsViewState extends State<SettingsView> {
                     },
                   ),
                 ),
+              SliverPadding(
+                padding: EdgeInsetsGeometry.symmetric(horizontal: 16),
+                sliver: SliverToBoxAdapter(child: Divider()),
+              ),
               SliverToBoxAdapter(
                 child: ListTile(
                   leading: const Icon(Icons.volume_up),

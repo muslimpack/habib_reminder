@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:audioplayers/audioplayers.dart';
 import 'package:bloc/bloc.dart';
@@ -7,6 +8,9 @@ import 'package:flutter/material.dart';
 import 'package:habib_reminder/src/features/home/data/data_source/audio_dummy_list.dart';
 import 'package:habib_reminder/src/features/home/data/models/audio_model.dart';
 import 'package:habib_reminder/src/features/home/data/repository/settings_repo.dart';
+import 'package:launch_at_startup/launch_at_startup.dart';
+import 'package:package_info_plus/package_info_plus.dart';
+import 'package:window_manager/window_manager.dart';
 
 part 'habib_state.dart';
 
@@ -17,10 +21,23 @@ class HabibCubit extends Cubit<HabibState> {
   Timer? _timer;
   Timer? _countdownTimer;
 
+  late final PackageInfo packageInfo;
+
+  late final LaunchAtStartup launchOnStartup;
+
   HabibCubit(this.settingsRepo) : super(HabibLoadingState());
 
   Future<void> start() async {
     emit(HabibLoadingState());
+
+    packageInfo = await PackageInfo.fromPlatform();
+    launchOnStartup = launchAtStartup
+      ..setup(
+        appName: packageInfo.appName,
+        appPath: Platform.resolvedExecutable,
+        // Set packageName parameter to support MSIX.
+        packageName: "com.hassaneltantawy.habib_reminder",
+      );
 
     // Use saved audio list or default to dummy list
     final audioList = settingsRepo.loadAudioList() ?? audioDummyList;
@@ -29,6 +46,13 @@ class HabibCubit extends Cubit<HabibState> {
         .loadAudioIntervalInMinutes();
     final bool isRunning = settingsRepo.loadIsRunning();
 
+    final isLaunchAtStartupEnabled = await launchOnStartup.isEnabled();
+    final launchMinimized = settingsRepo.loadILaunchMinimized();
+
+    if (launchMinimized) {
+      await windowManager.hide();
+    }
+
     emit(
       HabibLoadedState(
         audioList: audioList,
@@ -36,10 +60,31 @@ class HabibCubit extends Cubit<HabibState> {
         audioIntervalInMinutes: audioIntervalInMinutes,
         isRunning: isRunning,
         timeRemainingInSeconds: audioIntervalInMinutes * 60,
+        launchAtStartup: isLaunchAtStartupEnabled,
+        launchMinimized: launchMinimized,
       ),
     );
 
     _play();
+  }
+
+  Future toggleLaunchAtStartup() async {
+    final state = this.state;
+    if (state is! HabibLoadedState) return;
+    final isLaunchAtStartupEnabled = await launchOnStartup.isEnabled();
+    if (isLaunchAtStartupEnabled) {
+      await launchOnStartup.disable();
+    } else {
+      await launchOnStartup.enable();
+    }
+    emit(state.copyWith(launchAtStartup: !isLaunchAtStartupEnabled));
+  }
+
+  Future toggleLaunchMinimized() async {
+    final state = this.state;
+    if (state is! HabibLoadedState) return;
+    await settingsRepo.saveLaunchMinimized(!state.launchMinimized);
+    emit(state.copyWith(launchMinimized: !state.launchMinimized));
   }
 
   Future<void> changeGlobalVolume(double volume) async {

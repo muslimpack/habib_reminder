@@ -16,12 +16,16 @@ class HabibLoadedState extends HabibState {
   final int audioIntervalInMinutes;
   final bool isRunning;
   final int timeRemainingInSeconds;
+  final bool launchAtStartup;
+  final bool launchMinimized;
   const HabibLoadedState({
     required this.audioList,
     required this.globalVolume,
     required this.audioIntervalInMinutes,
     required this.isRunning,
     this.timeRemainingInSeconds = 0,
+    required this.launchAtStartup,
+    required this.launchMinimized,
   });
 
   Color get timeRemainingInSecondsColor {
@@ -41,6 +45,8 @@ class HabibLoadedState extends HabibState {
     globalVolume,
     audioIntervalInMinutes,
     timeRemainingInSeconds,
+    launchAtStartup,
+    launchMinimized,
   ];
 
   HabibLoadedState copyWith({
@@ -49,6 +55,8 @@ class HabibLoadedState extends HabibState {
     int? audioIntervalInMinutes,
     bool? isRunning,
     int? timeRemainingInSeconds,
+    bool? launchAtStartup,
+    bool? launchMinimized,
   }) {
     return HabibLoadedState(
       audioList: audioList ?? this.audioList,
@@ -58,6 +66,8 @@ class HabibLoadedState extends HabibState {
       isRunning: isRunning ?? this.isRunning,
       timeRemainingInSeconds:
           timeRemainingInSeconds ?? this.timeRemainingInSeconds,
+      launchAtStartup: launchAtStartup ?? this.launchAtStartup,
+      launchMinimized: launchMinimized ?? this.launchMinimized,
     );
   }
 }

@@ -38,7 +38,7 @@ class SummaryView extends StatelessWidget {
                   ),
                   Expanded(
                     child: Card(
-                      color: Colors.amber.withAlpha(100),
+                      color: state.timeRemainingInSecondsColor.withAlpha(100),
                       child: Padding(
                         padding: const EdgeInsets.all(16.0),
                         child: Column(
@@ -113,7 +113,6 @@ class SummaryView extends StatelessWidget {
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
                       color: state.timeRemainingInSecondsColor,
-                      fontFamily: 'monospace',
                     ),
                   ),
                 ],

@@ -11,6 +11,7 @@ class SettingsRepo {
   static const String _audioIntervalInMinutesKey = 'audio_interval_in_minutes';
   static const String _isRunningKey = 'is_running';
   static const String _audioListKey = 'audio_list';
+  static const String _launchMinimizedKey = 'launch_minimized';
 
   // Save global volume
   Future<void> saveGlobalVolume(double volume) async {
@@ -56,5 +57,16 @@ class SettingsRepo {
     return audioListData
         .map((data) => AudioModel.fromMap(data as Map<String, dynamic>))
         .toList();
+  }
+
+  // Save launch minimized state
+  Future<void> saveLaunchMinimized(bool isRunning) async {
+    await box.write(_launchMinimizedKey, isRunning);
+  }
+
+  // Load launch minimized state
+
+  bool loadILaunchMinimized() {
+    return box.read(_launchMinimizedKey) ?? false;
   }
 }

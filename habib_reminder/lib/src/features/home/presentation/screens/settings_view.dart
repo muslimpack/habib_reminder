@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:habib_reminder/src/core/extension/extension_platform.dart';
 import 'package:habib_reminder/src/features/home/presentation/components/audio_list_tile.dart';
 import 'package:habib_reminder/src/features/home/presentation/controller/cubit/habib_cubit.dart';
 
@@ -22,6 +23,28 @@ class _SettingsViewState extends State<SettingsView> {
           padding: EdgeInsetsGeometry.all(16),
           child: CustomScrollView(
             slivers: [
+              SliverToBoxAdapter(
+                child: CheckboxListTile(
+                  secondary: Icon(Icons.launch),
+                  value: state.launchAtStartup,
+                  title: const Text('بدء التشغيل مع النظام'),
+                  subtitle: Text('تشغيل التطبيق تلقائيا مع بداية تشغيل النظام'),
+                  onChanged: (value) async {
+                    await context.read<HabibCubit>().toggleLaunchAtStartup();
+                  },
+                ),
+              ),
+              if (PlatformExtension.isDesktop)
+                SliverToBoxAdapter(
+                  child: CheckboxListTile(
+                    secondary: Icon(Icons.flip_to_back_sharp),
+                    value: state.launchMinimized,
+                    title: const Text('التشغيل في الخلفية'),
+                    onChanged: (value) async {
+                      await context.read<HabibCubit>().toggleLaunchMinimized();
+                    },
+                  ),
+                ),
               SliverToBoxAdapter(
                 child: ListTile(
                   leading: const Icon(Icons.volume_up),

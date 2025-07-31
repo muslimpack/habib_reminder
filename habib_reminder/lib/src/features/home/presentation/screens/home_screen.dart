@@ -21,7 +21,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Habib Reminder'),
+        title: const Text("تذكرة المحب"),
         centerTitle: true,
         bottom: TabBar(
           controller: _tabController,

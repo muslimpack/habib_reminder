@@ -50,22 +50,28 @@ class HabibCubit extends Cubit<HabibState> {
     emit(state.copyWith(globalVolume: volume));
   }
 
-  Future<void> _play() async {
+  Future<void> changeInterval(int audioIntervalInMinutes) async {
     final state = this.state;
     if (state is! HabibLoadedState) return;
-
-    final randomAudio = List.of(state.audioList.where((e) => e.play))
-      ..shuffle();
-
-    stopTimer();
-    final currentAudio = randomAudio.firstOrNull;
-    if (currentAudio != null) {
-      await _audioPlayer.play(
-        AssetSource('sounds/${currentAudio.path}'),
-        volume: state.globalVolume * currentAudio.volume,
-      );
-    }
+    _stopTimer();
+    await settingsRepo.saveAudioIntervalInMinutes(audioIntervalInMinutes);
+    emit(
+      state.copyWith(
+        audioIntervalInMinutes: audioIntervalInMinutes,
+        timeRemainingInSeconds: audioIntervalInMinutes * 60,
+      ),
+    );
     _startTimer();
+  }
+
+  Future<void> toggleAudio(AudioModel audio) async {
+    final state = this.state;
+    if (state is! HabibLoadedState) return;
+    final newList = List.of(
+      state.audioList,
+    ).map((e) => e.id == audio.id ? e.copyWith(play: !e.play) : e).toList();
+    await settingsRepo.saveAudioList(newList);
+    emit(state.copyWith(audioList: newList));
   }
 
   Future<void> playPreview({required AudioModel audio}) async {
@@ -90,9 +96,27 @@ class HabibCubit extends Cubit<HabibState> {
     final state = this.state;
     if (state is! HabibLoadedState) return;
     await _audioPlayer.stop();
-    stopTimer();
+    _stopTimer();
     await settingsRepo.saveIsRunning(false);
     emit(state.copyWith(isRunning: false, timeRemainingInSeconds: 0));
+  }
+
+  Future<void> _play() async {
+    final state = this.state;
+    if (state is! HabibLoadedState) return;
+
+    final randomAudio = List.of(state.audioList.where((e) => e.play))
+      ..shuffle();
+
+    _stopTimer();
+    final currentAudio = randomAudio.firstOrNull;
+    if (currentAudio != null) {
+      await _audioPlayer.play(
+        AssetSource('sounds/${currentAudio.path}'),
+        volume: state.globalVolume * currentAudio.volume,
+      );
+    }
+    _startTimer();
   }
 
   void _startTimer() {
@@ -130,37 +154,13 @@ class HabibCubit extends Cubit<HabibState> {
     });
   }
 
-  void stopTimer() {
+  void _stopTimer() {
     final state = this.state;
     if (state is! HabibLoadedState) return;
     _timer?.cancel();
     _timer = null;
     _countdownTimer?.cancel();
     _countdownTimer = null;
-  }
-
-  Future<void> changeInterval(int audioIntervalInMinutes) async {
-    final state = this.state;
-    if (state is! HabibLoadedState) return;
-    stopTimer();
-    await settingsRepo.saveAudioIntervalInMinutes(audioIntervalInMinutes);
-    emit(
-      state.copyWith(
-        audioIntervalInMinutes: audioIntervalInMinutes,
-        timeRemainingInSeconds: audioIntervalInMinutes * 60,
-      ),
-    );
-    _startTimer();
-  }
-
-  Future<void> toggleAudio(AudioModel audio) async {
-    final state = this.state;
-    if (state is! HabibLoadedState) return;
-    final newList = List.of(
-      state.audioList,
-    ).map((e) => e.id == audio.id ? e.copyWith(play: !e.play) : e).toList();
-    await settingsRepo.saveAudioList(newList);
-    emit(state.copyWith(audioList: newList));
   }
 
   String formatTimeRemaining(int seconds) {

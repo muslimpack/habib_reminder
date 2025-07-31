@@ -104,13 +104,13 @@ class SummaryView extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 spacing: 16,
                 children: [
-                  Icon(Icons.access_time, size: 35, color: Colors.green),
+                  Icon(Icons.access_time, size: 24, color: Colors.green),
                   Text(
                     context.read<HabibCubit>().formatTimeRemaining(
                       state.timeRemainingInSeconds,
                     ),
                     style: TextStyle(
-                      fontSize: 32,
+                      fontSize: 24,
                       fontWeight: FontWeight.bold,
                       color: state.timeRemainingInSecondsColor,
                       fontFamily: 'monospace',

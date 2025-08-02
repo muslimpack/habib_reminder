@@ -2,15 +2,19 @@ import 'package:get_it/get_it.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:habib_reminder/src/core/constants/const.dart';
 import 'package:habib_reminder/src/core/services/system_tray_service.dart';
+import 'package:habib_reminder/src/core/utils/app_print.dart';
 import 'package:habib_reminder/src/features/desktop_ui/data/repository/desktop_repo.dart';
 import 'package:habib_reminder/src/features/home/data/repository/settings_repo.dart';
 import 'package:habib_reminder/src/features/home/presentation/controller/cubit/habib_cubit.dart';
+import 'package:path_provider/path_provider.dart';
 
 final sl = GetIt.instance;
 
 Future<void> initSL() async {
   ///MARK: Init storages
-  sl.registerLazySingleton(() => GetStorage(kGetStorageName));
+  final dir = await getApplicationSupportDirectory();
+  appPrint(dir.path);
+  sl.registerLazySingleton(() => GetStorage(kGetStorageName, dir.path));
   sl.registerLazySingleton(() => DesktopRepo(sl()));
   sl.registerLazySingleton(() => SettingsRepo(sl()));
 

@@ -16,12 +16,15 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_bloc: ^9.1.1
+  flutter_email_sender: ^7.0.0
   flutter_localizations:
     sdk: flutter
   get_it: ^8.1.0
   get_storage: ^2.1.1
+  intl: ^0.20.2
   launch_at_startup: ^0.5.1
   package_info_plus: ^8.3.0
+  path_provider: ^2.1.5
   system_tray: ^2.0.3
   url_launcher: ^6.3.2
   window_manager: ^0.5.1

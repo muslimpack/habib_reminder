@@ -70,3 +70,14 @@ class AudioModel extends Equatable {
   factory AudioModel.fromJson(String source) =>
       AudioModel.fromMap(json.decode(source) as Map<String, dynamic>);
 }
+
+///MARK: Mappers
+Map<String, bool> mapAudioListToMap(List<AudioModel> audios) {
+  return {for (var audio in audios) audio.id.toString(): audio.play};
+}
+
+Map<int, bool> mapAudioToMap(Map data) {
+  return data.map(
+    (key, value) => MapEntry(int.parse(key.toString()), value as bool),
+  );
+}

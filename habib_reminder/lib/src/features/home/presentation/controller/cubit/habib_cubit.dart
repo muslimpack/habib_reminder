@@ -40,13 +40,12 @@ class HabibCubit extends Cubit<HabibState> {
       );
 
     // Use saved audio list or default to dummy list
-    final loadedAudioList = settingsRepo.loadAudioList();
+    final loadedAudio = settingsRepo.loadAudio();
     final audioList = audioDummyList;
 
     for (var i = 0; i < audioList.length; i++) {
       final audio = audioList[i];
-      audioList[i] =
-          loadedAudioList.where((e) => e.id == audio.id).firstOrNull ?? audio;
+      audioList[i] = audio.copyWith(play: loadedAudio[audio.id] ?? true);
     }
 
     final double globalVolume = settingsRepo.loadGlobalVolume();
@@ -73,7 +72,9 @@ class HabibCubit extends Cubit<HabibState> {
       ),
     );
 
-    _play();
+    if (isRunning) {
+      _play();
+    }
   }
 
   Future toggleLaunchAtStartup() async {

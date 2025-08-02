@@ -20,7 +20,7 @@ class SettingsRepo {
 
   // Load global volume
   double loadGlobalVolume() {
-    return box.read(_globalVolumeKey) ?? 0.5;
+    return box.read(_globalVolumeKey) ?? 0.3;
   }
 
   // Save audio interval in minutes
@@ -30,7 +30,7 @@ class SettingsRepo {
 
   // Load audio interval in minutes
   int loadAudioIntervalInMinutes() {
-    return box.read(_audioIntervalInMinutesKey) ?? 1;
+    return box.read(_audioIntervalInMinutesKey) ?? 3;
   }
 
   // Save running state
@@ -45,18 +45,15 @@ class SettingsRepo {
 
   // Save audio list
   Future<void> saveAudioList(List<AudioModel> audioList) async {
-    final audioListData = audioList.map((audio) => audio.toMap()).toList();
-    await box.write(_audioListKey, audioListData);
+    final mapped = mapAudioListToMap(audioList);
+    await box.write(_audioListKey, mapped);
   }
 
   // Load audio list
-  List<AudioModel> loadAudioList() {
-    final audioListData = box.read(_audioListKey) as List<dynamic>?;
-    if (audioListData == null) return [];
-
-    return audioListData
-        .map((data) => AudioModel.fromMap(data as Map<String, dynamic>))
-        .toList();
+  Map<int, bool> loadAudio() {
+    final data = box.read<Map>(_audioListKey);
+    if (data == null) return {};
+    return mapAudioToMap(data);
   }
 
   // Save launch minimized state

@@ -17,7 +17,7 @@ final List<AudioModel> audioDummyList = [
   AudioModel(
     id: 4,
     name: 'اللهم صل وسلم على سيدنا وحبيبنا محمد',
-    author: '',
+    author: 'هيثم الدخين',
     path: '06.mp3',
     volume: .7,
   ),

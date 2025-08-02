@@ -6,12 +6,24 @@ class DesktopWindowButtons extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: 138,
-      height: 50,
-      child: WindowCaption(
-        brightness: Theme.of(context).brightness,
-        backgroundColor: Colors.transparent,
+    return Directionality(
+      textDirection: TextDirection.ltr,
+      child: SizedBox(
+        height: 50,
+        child: Row(
+          children: [
+            IconButton(
+              onPressed: () {
+                windowManager.hide();
+              },
+              icon: Icon(Icons.hide_image_outlined),
+            ),
+            WindowCaptionButton.minimize(
+              brightness: Theme.of(context).brightness,
+            ),
+            WindowCaptionButton.close(brightness: Theme.of(context).brightness),
+          ],
+        ),
       ),
     );
   }

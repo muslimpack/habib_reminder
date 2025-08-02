@@ -20,8 +20,16 @@ class DesktopWindowButtons extends StatelessWidget {
             ),
             WindowCaptionButton.minimize(
               brightness: Theme.of(context).brightness,
+              onPressed: () {
+                windowManager.minimize();
+              },
             ),
-            WindowCaptionButton.close(brightness: Theme.of(context).brightness),
+            WindowCaptionButton.close(
+              brightness: Theme.of(context).brightness,
+              onPressed: () {
+                windowManager.close();
+              },
+            ),
           ],
         ),
       ),

@@ -3,7 +3,7 @@ description: "A new Flutter project."
 
 publish_to: "none"
 
-version: 1.0.0+1
+version: 0.1.0+1
 
 environment:
   sdk: ^3.8.1
@@ -23,6 +23,7 @@ dependencies:
   launch_at_startup: ^0.5.1
   package_info_plus: ^8.3.0
   system_tray: ^2.0.3
+  url_launcher: ^6.3.2
   window_manager: ^0.5.1
 
 dev_dependencies:

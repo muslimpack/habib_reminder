@@ -26,16 +26,34 @@ class _DesktopAppBarState extends State<DesktopAppBar> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             if (kIsWeb)
-              const Align(
+              Align(
                 alignment: AlignmentDirectional.centerStart,
-                child: Text(kAppNameAr),
+                child: Row(
+                  children: [
+                    Image.asset("assets/icons/icon.png"),
+                    Text(kAppNameAr),
+                  ],
+                ),
               ),
             if (PlatformExtension.isDesktop)
-              const Expanded(
+              Expanded(
                 child: DragToMoveArea(
                   child: Align(
                     alignment: AlignmentDirectional.centerStart,
-                    child: Text(kAppNameAr),
+                    child: Row(
+                      spacing: 10,
+                      children: [
+                        SizedBox(
+                          width: 30,
+                          height: 30,
+                          child: Image.asset(
+                            "assets/icons/icon.png",
+                            fit: BoxFit.scaleDown,
+                          ),
+                        ),
+                        Text(kAppNameAr),
+                      ],
+                    ),
                   ),
                 ),
               ),
